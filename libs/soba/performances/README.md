@@ -16,6 +16,7 @@ npm install three-mesh-bvh
 - [NgtsAdaptiveEvents](#ngtsadaptiveevents)
 - [NgtsBVH](#ngtsbvh)
 - [NgtsDetailed](#ngtsdetailed)
+- [NgtsLOD](#ngtslod)
 - [NgtsInstances](#ngtsinstances)
 - [NgtsSegments](#ngtssegments)
 - [NgtsPoints](#ngtspoints)
@@ -92,6 +93,42 @@ Implements Level of Detail (LOD) rendering. Automatically switches between diffe
 	<ngt-mesh><!-- Medium detail --></ngt-mesh>
 	<ngt-mesh><!-- Low detail --></ngt-mesh>
 </ngts-detailed>
+```
+
+## NgtsLOD
+
+Implements Level of Detail (LOD) rendering. Automatically switches between different detail levels of child objects based on camera distance.
+
+Unlike `NgtsDetailed`, this is an implementation based on Angular and angular-three APIs rather than Three's LOD class.
+The component adds and remove objects from the scene graph rather than hiding them with `visible = false`.
+This solves a number of issues such as avoid raycasting over hidden objects.
+
+Usage:
+
+```html
+<ngt-group lod>
+  <ngt-mesh *lodLevel="{distance: 0}" />
+  <ngt-mesh *lodLevel="{distance: 100}" />
+  <ngt-mesh *lodLevel="{distance: 1000}" />
+</ngt-group>
+```
+
+The `[lodLevel]` directive (`NgtsLODLevel`) supports the following options:
+
+| Property     | Description                                       | Default Value |
+| ------------ | ------------------------------------------------- | ------------- |
+| `distance`   | Threshold above which to display the object       | `0`           |
+| `hysteresis` | Prevents rapid switching near distance thresholds | `0`           |
+
+This directive may also be used with the following syntax:
+
+```html
+<ngt-group lod>
+  <ng-template [lodLevel]="{distance: 0}">
+    <ngt-mesh />
+    <ngt-mesh />
+  </ng-template>
+</ngt-group>
 ```
 
 ## NgtsInstances
