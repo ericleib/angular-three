@@ -7,18 +7,18 @@ import { storyDecorators, storyFunction } from '../setup-canvas';
 
 @Component({
 	template: `
-		<ngt-group lod>
-			<ngt-mesh *lodLevel="{}">
+		<ngt-group lod [maxDistance]="200">
+			<ngt-mesh *lodLevel="0">
 				<ngt-icosahedron-geometry *args="[10, 3]" />
 				<ngt-mesh-basic-material color="hotpink" wireframe />
 			</ngt-mesh>
 
-			<ngt-mesh *lodLevel="{distance: 50}">
+			<ngt-mesh *lodLevel="50" (click)="toggleColor()">
 				<ngt-icosahedron-geometry *args="[10, 2]" />
-				<ngt-mesh-basic-material color="lightgreen" wireframe />
+				<ngt-mesh-basic-material [color]="color()" wireframe />
 			</ngt-mesh>
 
-			<ngt-mesh *lodLevel="{distance: 150, hysteresis: 0.1}">
+			<ngt-mesh *lodLevel="150" [hysteresis]="0.1">
 				<ngt-icosahedron-geometry *args="[10, 1]" />
 				<ngt-mesh-basic-material color="lightblue" wireframe />
 			</ngt-mesh>
@@ -30,7 +30,13 @@ import { storyDecorators, storyFunction } from '../setup-canvas';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [NgtsLODImpl, NgtsLODLevel, NgtArgs, NgtsOrbitControls],
 })
-class DefaultLODStory {}
+class DefaultLODStory {
+	protected color = signal('#ff0000');
+    
+    toggleColor() {
+        this.color.update(c => c === '#ff0000'? '#00ff00' : '#ff0000' );
+    }
+}
 
 export default {
 	title: 'Performances/LOD',
