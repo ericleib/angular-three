@@ -20,23 +20,25 @@ const _v2 = new Vector3();
  *
  * ```html
  * <ngt-group lod>
- *   <ngt-mesh *lodLevel="{distance: 0}" />
- *   <ngt-mesh *lodLevel="{distance: 100}" />
- *   <ngt-mesh *lodLevel="{distance: 1000}" />
+ *   <ngt-mesh *lodLevel="0" />
+ *   <ngt-mesh *lodLevel="100" [hysteresis]="0.1" />
+ *   <ngt-mesh *lodLevel="1000" />
  * </ngt-group>
  * ```
  */
 @Component({
   selector: '[lod]',
   template: `
-    <ng-container *ngTemplateOutlet="level()?.template" />
+    <ng-container [ngTemplateOutlet]="level()?.template" />
   `,
-	schemas: [CUSTOM_ELEMENTS_SCHEMA],
- imports: [NgTemplateOutlet],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [NgTemplateOutlet],
 })
 export class NgtsLODImpl {
+  maxDistance = input<number>();
+
   private store = injectStore();
-	private container = inject(ElementRef);
+  private container = inject(ElementRef);
 
   readonly levels = contentChildren(NgtsLODLevel);
   readonly level = signal<NgtsLODLevel|undefined>(undefined);
@@ -46,10 +48,11 @@ export class NgtsLODImpl {
 
       const levels = this.levels();
       const currentLevel = this.level();
+      const maxDistance = this.maxDistance();
 
-      let level = levels[0];
+      let level: NgtsLODLevel|undefined = levels[0];
 
-      if(levels.length > 1) {
+      if(level && (levels.length > 1 || maxDistance)) {
 
         const container = this.container.nativeElement as Object3D;
         const {matrixWorld, zoom} = this.store.snapshot.camera;
@@ -59,21 +62,25 @@ export class NgtsLODImpl {
 
         const distance = _v1.distanceTo( _v2 ) / zoom;
 
-        for (let i = 1, l = levels.length; i < l; i ++ ) {
-          const _level = levels[i];
-          let options = _level.lodLevel();
-          let levelDistance = options?.distance || 0;
-          let hysteresis = options?.hysteresis || 0;
+        if(maxDistance && distance > maxDistance) {
+          level = undefined;
+        }
+        else {
+          for (let i = 1, l = levels.length; i < l; i ++ ) {
+            const _level = levels[i];
+            let levelDistance = _level.lodLevel();
+            let hysteresis = _level.hysteresis();
 
-          if (currentLevel === _level) {
-            levelDistance -= levelDistance * hysteresis;
-          }
+            if (hysteresis && currentLevel === _level) {
+              levelDistance -= levelDistance * hysteresis;
+            }
 
-          if (distance >= levelDistance) {
-            level = _level;
-          }
-          else {
-            break;
+            if (distance >= levelDistance) {
+              level = _level;
+            }
+            else {
+              break;
+            }
           }
         }
       }
@@ -94,7 +101,8 @@ export class NgtsLODImpl {
   selector: 'ng-template[lodLevel]'
 })
 export class NgtsLODLevel {
-  lodLevel = input<{ distance?: number, hysteresis?: number }>();
+  lodLevel = input<number>(0);
+  hysteresis = input<number>(0);
   template = inject(TemplateRef);
 }
 
