@@ -18,6 +18,18 @@ const _v1 = new Vector3();
 const _v2 = new Vector3();
 
 /**
+ * Helper directive to capture a template to attach to
+ * an NgtsLOD component.
+ */
+@Directive({
+  selector: 'ng-template[lodLevel]'
+})
+export class NgtsLODLevel {
+  lodLevel = input(defaultLodLevelOptions, { transform: mergeInputs(defaultLodLevelOptions) });
+  template = inject(TemplateRef);
+}
+
+/**
  * Angular-native port of THREE.LOD
  *
  * Allows to display an object with several levels of details.
@@ -99,19 +111,6 @@ export class NgtsLODImpl {
       }
     });
   }
-}
-
-
-/**
- * Helper directive to capture a template to attach to
- * an NgtsLOD component.
- */
-@Directive({
-  selector: 'ng-template[lodLevel]'
-})
-export class NgtsLODLevel {
-  lodLevel = input(defaultLodLevelOptions, { transform: mergeInputs(defaultLodLevelOptions) });
-  template = inject(TemplateRef);
 }
 
 export const NgtsLOD = [NgtsLODImpl, NgtsLODLevel] as const;
