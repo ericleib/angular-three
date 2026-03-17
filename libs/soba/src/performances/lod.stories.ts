@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA } from '@ang
 import { Meta } from '@storybook/angular';
 import { NgtArgs } from 'angular-three';
 import { NgtsOrbitControls } from 'angular-three-soba/controls';
-import { NgtsLOD } from 'angular-three-soba/performances';
+import { NgtsLODImpl, NgtsLODLevel } from 'angular-three-soba/performances';
 import { storyDecorators, storyFunction } from '../setup-canvas';
 
 @Component({
@@ -28,7 +28,7 @@ import { storyDecorators, storyFunction } from '../setup-canvas';
 	`,
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [NgtsLOD, NgtArgs, NgtsOrbitControls],
+	imports: [NgtsLODImpl, NgtsLODLevel, NgtArgs, NgtsOrbitControls],
 })
 class DefaultLODStory {}
 
