@@ -106,31 +106,35 @@ This solves a number of issues such as avoid raycasting over hidden objects.
 Usage:
 
 ```html
-<ngt-group lod>
-  <ngt-mesh *lodLevel="0" />
-  <ngt-mesh *lodLevel="100" [hysteresis]="0.1" />
-  <ngt-mesh *lodLevel="1000" />
+<ngt-group lod [maxDistance]="10000">
+  <ngt-mesh *lodLevel />
+  <ngt-mesh *lodLevel="{distance: 100, hysteresis: 0.1}" />
+  <ngt-mesh *lodLevel="{distance: 1000}" />
 </ngt-group>
 ```
 
 The `[lod]` directive (`NgtsLODImpl`) supports the following optional input:
 
-| Property      | Description                                                                   | Default Value |
-| ------------- | ----------------------------------------------------------------------------- | ------------- |
-| `maxDistance` | Distance above which nothing is displayed (equivalent to a last empty level)  | `undefined`   |
+| Property      | Description                                                                    | Default Value |
+| ------------- | ------------------------------------------------------------------------------ | ------------- |
+| `maxDistance` | Distance beyond which nothing is displayed (equivalent to a last empty level)  | `undefined`   |
 
-The `[lodLevel]` directive (`NgtsLODLevel`) supports the following inputs:
+The `[lodLevel]` directive (`NgtsLODLevel`) supports the following object inputs:
 
 | Property     | Description                                           | Default Value |
 | ------------ | ----------------------------------------------------- | ------------- |
-| `lodLevel`   | Distance threshold above which to display the object  | `0`           |
+| `distance`   | Distance threshold above which to display the object  | `0`           |
 | `hysteresis` | Prevents rapid switching near distance thresholds     | `0`           |
 
-This directive may also be used with the following syntax:
+This directive may also be used with the following shorthand syntax:
 
 ```html
 <ngt-group lod>
-  <ng-template [lodLevel]="0">
+  <ng-template lodLevel>
+    <ngt-mesh />
+    <ngt-mesh />
+  </ng-template>
+  <ng-template [lodLevel]="{distance: 100}">
     <ngt-mesh />
     <ngt-mesh />
   </ng-template>
