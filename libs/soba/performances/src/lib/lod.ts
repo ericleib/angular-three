@@ -31,7 +31,6 @@ const _v2 = new Vector3();
   template: `
     <ng-container [ngTemplateOutlet]="level()?.template" />
   `,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [NgTemplateOutlet],
 })
 export class NgtsLODImpl {
