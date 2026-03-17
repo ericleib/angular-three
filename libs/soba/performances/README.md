@@ -107,24 +107,30 @@ Usage:
 
 ```html
 <ngt-group lod>
-  <ngt-mesh *lodLevel="{distance: 0}" />
-  <ngt-mesh *lodLevel="{distance: 100}" />
-  <ngt-mesh *lodLevel="{distance: 1000}" />
+  <ngt-mesh *lodLevel="0" />
+  <ngt-mesh *lodLevel="100" [hysteresis]="0.1" />
+  <ngt-mesh *lodLevel="1000" />
 </ngt-group>
 ```
 
-The `[lodLevel]` directive (`NgtsLODLevel`) supports the following options:
+The `[lod]` directive (`NgtsLODImpl`) supports the following optional input:
 
-| Property     | Description                                       | Default Value |
-| ------------ | ------------------------------------------------- | ------------- |
-| `distance`   | Threshold above which to display the object       | `0`           |
-| `hysteresis` | Prevents rapid switching near distance thresholds | `0`           |
+| Property      | Description                                                                   | Default Value |
+| ------------- | ----------------------------------------------------------------------------- | ------------- |
+| `maxDistance` | Distance above which nothing is displayed (equivalent to a last empty level)  | `undefined`   |
+
+The `[lodLevel]` directive (`NgtsLODLevel`) supports the following inputs:
+
+| Property     | Description                                           | Default Value |
+| ------------ | ----------------------------------------------------- | ------------- |
+| `lodLevel`   | Distance threshold above which to display the object  | `0`           |
+| `hysteresis` | Prevents rapid switching near distance thresholds     | `0`           |
 
 This directive may also be used with the following syntax:
 
 ```html
 <ngt-group lod>
-  <ng-template [lodLevel]="{distance: 0}">
+  <ng-template [lodLevel]="0">
     <ngt-mesh />
     <ngt-mesh />
   </ng-template>
