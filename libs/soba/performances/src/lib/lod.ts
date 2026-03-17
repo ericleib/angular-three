@@ -1,7 +1,18 @@
-import { Component, contentChildren, CUSTOM_ELEMENTS_SCHEMA, Directive, ElementRef, inject, input, linkedSignal, signal, TemplateRef, viewChild } from "@angular/core";
+import { Component, contentChildren, Directive, ElementRef, inject, input, signal, TemplateRef } from "@angular/core";
 import { NgTemplateOutlet } from "@angular/common";
 import { beforeRender, injectStore } from "angular-three";
+import { mergeInputs } from 'ngxtension/inject-inputs';
 import { Object3D, Vector3 } from "three";
+
+export type NgtsLODLevelOptions = {
+  distance: number;
+  hysteresis: number;
+}
+
+const defaultLodLevelOptions: NgtsLODLevelOptions = {
+  distance: 0,
+  hysteresis: 0,
+};
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();
@@ -19,10 +30,10 @@ const _v2 = new Vector3();
  * Usage:
  *
  * ```html
- * <ngt-group lod>
- *   <ngt-mesh *lodLevel="0" />
- *   <ngt-mesh *lodLevel="100" [hysteresis]="0.1" />
- *   <ngt-mesh *lodLevel="1000" />
+ * <ngt-group lod [maxDistance]="10000">
+ *   <ngt-mesh *lodLevel />
+ *   <ngt-mesh *lodLevel="{distance: 100, hysteresis: 0.1}" />
+ *   <ngt-mesh *lodLevel="{distance: 1000}" />
  * </ngt-group>
  * ```
  */
@@ -37,7 +48,7 @@ export class NgtsLODImpl {
   maxDistance = input<number>();
 
   private store = injectStore();
-  private container = inject(ElementRef);
+	private container = inject(ElementRef);
 
   readonly levels = contentChildren(NgtsLODLevel);
   readonly level = signal<NgtsLODLevel|undefined>(undefined);
@@ -67,8 +78,7 @@ export class NgtsLODImpl {
         else {
           for (let i = 1, l = levels.length; i < l; i ++ ) {
             const _level = levels[i];
-            let levelDistance = _level.lodLevel();
-            let hysteresis = _level.hysteresis();
+            let {distance: levelDistance, hysteresis} = _level.lodLevel();
 
             if (hysteresis && currentLevel === _level) {
               levelDistance -= levelDistance * hysteresis;
@@ -100,8 +110,7 @@ export class NgtsLODImpl {
   selector: 'ng-template[lodLevel]'
 })
 export class NgtsLODLevel {
-  lodLevel = input<number>(0);
-  hysteresis = input<number>(0);
+  lodLevel = input(defaultLodLevelOptions, { transform: mergeInputs(defaultLodLevelOptions) });
   template = inject(TemplateRef);
 }
 
